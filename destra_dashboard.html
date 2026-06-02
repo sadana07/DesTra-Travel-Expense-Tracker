@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DesTra — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: #e0f0ff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #020b1e;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(10,40,100,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(5,20,60,0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(0,10,40,0.6) 0%, transparent 55%);
+}
+
+/* STARS EFFECT */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 10%, rgba(150,200,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 85% 75%, rgba(150,200,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 70%, rgba(150,200,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 45%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 55%, rgba(150,200,255,0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 48% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 92% 50%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 90%, rgba(150,200,255,0.4) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+header, .sidebar, .main-content, footer { position: relative; z-index: 2; }
+
+/* HEADER */
+header {
+  background: #000;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0 28px; height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: #fff; }
+.user-btn { position: relative; }
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg,#1a6fff,#0ea5e9);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  border: 2px solid rgba(80,160,255,0.4); color: #fff;
+}
+.user-dropdown {
+  position: absolute; top: 44px; right: 0;
+  background: #0a1628; border: 1px solid rgba(80,160,255,0.25);
+  border-radius: 12px; padding: 14px 18px; min-width: 210px;
+  display: none; box-shadow: 0 8px 32px rgba(0,0,0,0.6); z-index: 999;
+}
+.user-dropdown.show { display: block; }
+.user-dropdown .uname { font-size: 14px; font-weight: 600; color: #e0f0ff; margin-bottom: 4px; }
+.user-dropdown .uemail { font-size: 12px; color: rgba(150,200,255,0.5); margin-bottom: 14px; }
+.btn-logout-dd { width: 100%; padding: 8px; background: rgba(255,80,80,0.15); border: 1px solid rgba(255,80,80,0.3); border-radius: 8px; color: #ff8080; font-size: 13px; cursor: pointer; }
+
+/* LAYOUT */
+.app-body { display: flex; flex: 1; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 180px; background: rgba(0,0,0,0.88);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column;
+  padding: 20px 0; flex-shrink: 0;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; font-size: 14px;
+  color: rgba(180,210,255,0.65); cursor: pointer;
+  transition: all 0.15s; border-left: 3px solid transparent;
+}
+.nav-item:hover { background: rgba(80,160,255,0.08); color: #fff; }
+.nav-item.active { background: rgba(80,160,255,0.12); color: #4aa8ff; border-left-color: #4aa8ff; }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.sidebar-spacer { flex: 1; }
+.nav-logout {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; font-size: 14px;
+  color: rgba(255,120,120,0.7); cursor: pointer;
+  transition: all 0.15s; border-left: 3px solid transparent;
+  margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.nav-logout:hover { color: #ff8080; background: rgba(255,80,80,0.08); }
+
+/* MAIN */
+.main-content { flex: 1; overflow-y: auto; padding: 32px 36px; }
+
+.dash-page { display: none; }
+.dash-page.active { display: block; }
+
+/* CENTER WRAPPER */
+.page-center { max-width: 620px; margin: 0 auto; }
+
+/* ── HOME PAGE ── */
+.home-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: #fff; text-align: center; margin-bottom: 8px; }
+.home-sub { font-size: 14px; color: rgba(150,200,255,0.5); text-align: center; margin-bottom: 40px; }
+
+.route-row { display: flex; align-items: center; margin-bottom: 28px; }
+.route-wrap { flex: 1; position: relative; }
+.route-wrap input { width: 100%; padding: 13px 18px; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(80,160,255,0.25); border-radius: 12px; font-size: 14px; color: #e0f0ff; outline: none; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s; }
+.route-wrap input:focus { border-color: #4aa8ff; }
+.route-wrap input::placeholder { color: rgba(150,200,255,0.35); }
+.pin-connector { display: flex; flex-direction: row; align-items: center; padding: 0 10px; flex-shrink: 0; }
+.h-dash { width: 20px; border-top: 2px dashed rgba(80,160,255,0.45); }
+.map-pin svg { width: 24px; height: 24px; }
+.dropdown-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #0a1628; border: 1px solid rgba(80,160,255,0.3); border-radius: 12px; max-height: 200px; overflow-y: auto; z-index: 200; display: none; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+.dropdown-list.show { display: block; }
+.dropdown-item { padding: 11px 16px; font-size: 13px; cursor: pointer; color: #c0d8ff; border-bottom: 1px solid rgba(80,160,255,0.08); }
+.dropdown-item:hover { background: rgba(80,160,255,0.15); color: #fff; }
+.dropdown-item:last-child { border-bottom: none; }
+
+.form-row { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.form-label { font-size: 14px; color: rgba(180,210,255,0.8); width: 200px; flex-shrink: 0; }
+.form-controls { display: flex; gap: 10px; flex: 1; }
+.select-dark { flex: 1; padding: 12px 14px; background: rgba(10,22,40,0.95); border: 1.5px solid rgba(80,160,255,0.25); border-radius: 10px; font-size: 14px; color: #e0f0ff; outline: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.select-dark option { background: #0a1628; color: #e0f0ff; }
+.select-dark:focus { border-color: #4aa8ff; }
+
+.currency-pref { background: rgba(255,255,255,0.04); border: 1px solid rgba(80,160,255,0.15); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; }
+.currency-pref label { font-size: 14px; color: rgba(180,210,255,0.8); flex-shrink: 0; }
+
+.divider { border: none; border-top: 1px solid rgba(80,160,255,0.12); margin: 22px 0; }
+
+.btn-calculate { width: 100%; padding: 14px; background: linear-gradient(135deg, #1a6fff, #0ea5e9); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 24px rgba(30,120,255,0.4); transition: transform 0.15s, box-shadow 0.15s; }
+.btn-calculate:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(30,120,255,0.55); }
+
+.catchy-text { text-align: center; margin-top: 20px; padding: 16px 20px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(80,160,255,0.1); }
+.catchy-text p { font-size: 13px; color: rgba(150,200,255,0.55); line-height: 1.8; }
+.catchy-text .hl { color: #4aa8ff; font-weight: 600; }
+
+/* ── TRAVEL EXPENSE PAGE ── */
+/* Full layout matching sketch */
+.te-page-wrap { max-width: 960px; margin: 0 auto; }
+
+/* Map full width on top */
+.map-full { width: 100%; height: 260px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(80,160,255,0.2); margin-bottom: 24px; }
+#leaflet-map { width: 100%; height: 100%; }
+
+/* Two col below map */
+.te-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; align-items: stretch; }
+
+.section-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(150,200,255,0.4); margin-bottom: 12px; }
+
+.glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(80,160,255,0.15); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; }
+
+/* Expense inputs */
+.expense-item { margin-bottom: 12px; }
+.expense-item label { display: block; font-size: 13px; color: rgba(150,200,255,0.7); margin-bottom: 5px; }
+.expense-item input { width: 100%; padding: 10px 13px; background: rgba(10,22,40,0.95); border: 1.5px solid rgba(80,160,255,0.2); border-radius: 9px; font-size: 14px; color: #e0f0ff; outline: none; font-family: 'DM Sans', sans-serif; }
+.expense-item input:focus { border-color: #4aa8ff; }
+
+/* Charts */
+/* Charts - pie on top, bar below, no gaps */
+.chart-top { display: flex; gap: 16px; align-items: center; margin-bottom: 0; padding-bottom: 16px; border-bottom: 1px solid rgba(80,160,255,0.1); }
+.chart-top canvas { width: 160px !important; height: 160px !important; flex-shrink: 0; }
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: rgba(150,200,255,0.75); margin-bottom: 8px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.legend-pct { margin-left: auto; font-weight: 600; color: #fff; font-size: 12px; }
+.bar-wrap { width: 100%; flex: 1; padding-top: 14px; display: flex; flex-direction: column; }
+.bar-wrap canvas { width: 100% !important; flex: 1; min-height: 150px; display: block; }
+
+/* Bottom row: Save | Total | Clear */
+.te-bottom { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
+.btn-save-hist { padding: 12px 20px; background: linear-gradient(135deg,#1a6fff,#0ea5e9); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn-save-hist:hover { box-shadow: 0 4px 16px rgba(30,120,255,0.4); }
+.total-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(80,160,255,0.2); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.total-label { font-size: 13px; color: rgba(150,200,255,0.6); white-space: nowrap; }
+.total-amount { font-size: 22px; font-weight: 700; color: #fff; }
+.btn-clear-exp { padding: 12px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(80,160,255,0.2); border-radius: 10px; color: #e0f0ff; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.btn-clear-exp:hover { background: rgba(255,80,80,0.15); border-color: rgba(255,80,80,0.3); color: #ff8080; }
+
+/* ── CURRENCY PAGE ── */
+.currency-center { max-width: 440px; margin: 0 auto; }
+.currency-big-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #fff; text-align: center; margin-bottom: 8px; }
+.currency-desc { font-size: 14px; color: rgba(150,200,255,0.5); text-align: center; margin-bottom: 28px; line-height: 1.7; }
+.curr-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(80,160,255,0.15); border-radius: 16px; padding: 26px; }
+.curr-field { margin-bottom: 14px; }
+.curr-field label { display: block; font-size: 13px; color: rgba(150,200,255,0.6); margin-bottom: 6px; }
+.curr-field input { width: 100%; padding: 12px 14px; background: rgba(10,22,40,0.95); border: 1.5px solid rgba(80,160,255,0.2); border-radius: 10px; font-size: 15px; color: #e0f0ff; outline: none; font-family: 'DM Sans', sans-serif; }
+.curr-field input:focus { border-color: #4aa8ff; }
+.curr-field select { width: 100%; padding: 12px 14px; background: rgba(10,22,40,0.95); border: 1.5px solid rgba(80,160,255,0.2); border-radius: 10px; font-size: 14px; color: #e0f0ff; outline: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.curr-field select option { background: #0a1628; }
+.curr-arrow { text-align: center; font-size: 20px; color: #4aa8ff; margin: 6px 0; }
+.btn-convert { width: 100%; padding: 13px; background: linear-gradient(135deg,#1a6fff,#0ea5e9); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px; }
+.currency-result { font-size: 18px; font-weight: 700; color: #7dd3fc; text-align: center; padding: 14px; background: rgba(80,160,255,0.08); border-radius: 10px; margin-top: 14px; }
+.currency-why { margin-top: 24px; padding: 18px 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(80,160,255,0.1); }
+.currency-why .why-title { font-size: 14px; font-weight: 600; color: #7dd3fc; margin-bottom: 8px; }
+.currency-why p { font-size: 13px; color: rgba(150,200,255,0.5); line-height: 1.8; }
+
+/* ── HISTORY PAGE ── */
+.history-center { max-width: 680px; margin: 0 auto; }
+.hist-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 6px; }
+.hist-sub { font-size: 14px; color: rgba(150,200,255,0.45); margin-bottom: 24px; }
+.hist-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(80,160,255,0.15); border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.hist-route { font-size: 14px; font-weight: 600; color: #e0f0ff; margin-bottom: 3px; }
+.hist-day { font-size: 12px; color: rgba(150,200,255,0.45); }
+.hist-amount { font-size: 20px; font-weight: 700; color: #4aa8ff; }
+.hist-total-bar { background: linear-gradient(135deg,rgba(26,111,255,0.15),rgba(14,165,233,0.1)); border: 1px solid rgba(80,160,255,0.3); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.hist-total-label { font-size: 14px; color: rgba(150,200,255,0.6); }
+.hist-total-val { font-size: 22px; font-weight: 700; color: #fff; }
+.hist-actions { display: flex; gap: 12px; margin-top: 18px; }
+.btn-hist-clear { flex: 1; padding: 11px; background: rgba(255,255,255,0.06); border: 1px solid rgba(80,160,255,0.2); border-radius: 10px; color: #e0f0ff; font-size: 14px; cursor: pointer; }
+.btn-hist-clear:hover { background: rgba(255,165,0,0.12); border-color: rgba(255,165,0,0.3); color: #ffd080; }
+.btn-hist-delete { flex: 1; padding: 11px; background: rgba(255,80,80,0.08); border: 1px solid rgba(255,80,80,0.2); border-radius: 10px; color: #ff8080; font-size: 14px; cursor: pointer; }
+.btn-hist-delete:hover { background: rgba(255,80,80,0.2); }
+.hist-empty { text-align: center; padding: 50px 20px; color: rgba(150,200,255,0.35); font-size: 14px; }
+
+/* ── ABOUT PAGE ── */
+.about-center { max-width: 680px; margin: 0 auto; }
+.about-hero-title { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 900; color: #fff; margin-bottom: 14px; line-height: 1.2; }
+.about-tagline { font-size: 18px; color: #4aa8ff; font-style: italic; margin-bottom: 36px; }
+.about-section { margin-bottom: 32px; }
+.about-section h3 { font-size: 18px; font-weight: 600; color: #7dd3fc; margin-bottom: 10px; }
+.about-section p { font-size: 15px; line-height: 1.85; color: rgba(200,225,255,0.7); }
+.about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.feat-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(80,160,255,0.15); border-radius: 12px; padding: 16px; }
+.feat-icon { font-size: 22px; margin-bottom: 7px; }
+.feat-title { font-size: 14px; font-weight: 600; color: #e0f0ff; margin-bottom: 4px; }
+.feat-desc { font-size: 13px; color: rgba(150,200,255,0.5); line-height: 1.5; }
+
+/* FOOTER */
+footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: rgba(200,200,200,0.35); position: relative; z-index: 2; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">DesTra</div>
+  <div class="user-btn">
+    <div class="user-avatar" onclick="toggleUserDD()" id="user-avatar">U</div>
+    <div class="user-dropdown" id="user-dropdown">
+      <div class="uname" id="dd-name">User</div>
+      <div class="uemail" id="dd-email">—</div>
+      <button class="btn-logout-dd" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="nav-item active" onclick="showPage('home')" id="nav-home"><span class="nav-icon">🏠</span> Home</div>
+    <div class="nav-item" onclick="showPage('travel')" id="nav-travel"><span class="nav-icon">✈</span> Travel Expense</div>
+    <div class="nav-item" onclick="showPage('currency')" id="nav-currency"><span class="nav-icon">💱</span> Currency</div>
+    <div class="nav-item" onclick="showPage('history')" id="nav-history"><span class="nav-icon">📋</span> History</div>
+    <div class="nav-item" onclick="showPage('about')" id="nav-about"><span class="nav-icon">ℹ</span> About</div>
+    <div class="sidebar-spacer"></div>
+    <div class="nav-logout" onclick="doLogout()"><span class="nav-icon">🚪</span> Logout</div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- HOME -->
+    <div class="dash-page active" id="page-home">
+      <div class="page-center">
+        <h1 class="home-title">Plan Your Trip ✈</h1>
+        <p class="home-sub">Enter your travel details and calculate your expenses</p>
+
+        <div class="route-row">
+          <div class="route-wrap">
+            <input type="text" id="from-input" placeholder="From (city / state / country)" oninput="filterPlaces('from-input','from-dd')" autocomplete="off"/>
+            <div class="dropdown-list" id="from-dd"></div>
+          </div>
+          <div class="pin-connector">
+            <div class="h-dash"></div>
+            <div class="map-pin">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="white"/>
+                <circle cx="12" cy="9" r="2.5" fill="#020b1e"/>
+              </svg>
+            </div>
+            <div class="h-dash"></div>
+          </div>
+          <div class="route-wrap">
+            <input type="text" id="to-input" placeholder="Destination (city / state / country)" oninput="filterPlaces('to-input','to-dd')" autocomplete="off"/>
+            <div class="dropdown-list" id="to-dd"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <span class="form-label">Total no. of stay</span>
+          <div class="form-controls">
+            <select class="select-dark" id="stay-unit">
+              <option value="Days">Days</option>
+              <option value="Months">Months</option>
+              <option value="Years">Years</option>
+            </select>
+            <select class="select-dark" id="stay-count"><option value="">No. of stay</option></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <span class="form-label">Stay in hotel?</span>
+          <div class="form-controls">
+            <select class="select-dark" id="hotel-stay">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="currency-pref">
+          <label>Your preferred currency</label>
+          <select class="select-dark" id="pref-currency" style="flex:1;">
+            <option value="INR">🇮🇳 INR — Indian Rupee</option>
+            <option value="USD">🇺🇸 USD — US Dollar</option>
+            <option value="SGD">🇸🇬 SGD — Singapore Dollar</option>
+            <option value="EUR">🇪🇺 EUR — Euro</option>
+            <option value="GBP">🇬🇧 GBP — British Pound</option>
+            <option value="AED">🇦🇪 AED — UAE Dirham</option>
+            <option value="JPY">🇯🇵 JPY — Japanese Yen</option>
+            <option value="AUD">🇦🇺 AUD — Australian Dollar</option>
+            <option value="CAD">🇨🇦 CAD — Canadian Dollar</option>
+            <option value="MYR">🇲🇾 MYR — Malaysian Ringgit</option>
+          </select>
+        </div>
+
+        <div class="divider"></div>
+        <button class="btn-calculate" onclick="goToTravel()">Calculate Travel Expenses</button>
+
+        <div class="catchy-text">
+          <p>
+            <span class="hl">Every great journey starts with a smart plan.</span><br/>
+            DesTra helps you track every rupee, dollar, or dirham —<br/>
+            so you travel with <span class="hl">confidence, not surprises.</span><br/>
+            Enter your details above and let's map out your dream trip! 🌍
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRAVEL EXPENSE -->
+    <div class="dash-page" id="page-travel">
+      <div class="te-page-wrap">
+
+        <!-- MAP FULL WIDTH -->
+        <div class="section-title">Route Map</div>
+        <div class="map-full">
+          <div id="leaflet-map"></div>
+        </div>
+
+        <div id="te-trip-info" style="font-size:13px;color:rgba(150,200,255,0.5);margin-bottom:16px;"></div>
+
+        <!-- TWO COL: inputs | charts -->
+        <div class="te-two-col">
+
+          <!-- LEFT: Expense Inputs -->
+          <div>
+            <div class="section-title">Enter Your Expenses <span id="te-curr-label" style="color:#4aa8ff;"></span></div>
+            <div class="glass-card">
+              <div class="expense-item"><label>✈ Travel Expense</label><input type="number" id="exp-travel" placeholder="Enter amount" oninput="updateChart()"/></div>
+              <div class="expense-item" id="rent-item"><label>🏨 Rent / Hotel Expense</label><input type="number" id="exp-rent" placeholder="Enter amount" oninput="updateChart()"/></div>
+              <div class="expense-item"><label>🛍 Shopping Expense</label><input type="number" id="exp-shopping" placeholder="Enter amount" oninput="updateChart()"/></div>
+              <div class="expense-item"><label>🍜 Food Expense</label><input type="number" id="exp-food" placeholder="Enter amount" oninput="updateChart()"/></div>
+              <div class="expense-item"><label>💼 Other Expense</label><input type="number" id="exp-other" placeholder="Enter amount" oninput="updateChart()"/></div>
+              <div class="expense-item"><label>🔙 Return Expense</label><input type="number" id="exp-return" placeholder="Enter amount" oninput="updateChart()"/></div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Charts -->
+          <div>
+            <div class="section-title">Expense Breakdown</div>
+            <div class="glass-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:0;">
+              <!-- Pie chart + legend side by side -->
+              <div class="chart-top">
+                <canvas id="pieChart"></canvas>
+                <div style="flex:1;min-width:0;" id="pie-legend">
+                  <div style="font-size:12px;color:rgba(150,200,255,0.35);">Enter expenses to see chart</div>
+                </div>
+              </div>
+              <!-- Bar chart below -->
+              <div class="bar-wrap">
+                <canvas id="barChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- BOTTOM ROW: Save | Total | Clear -->
+        <div class="te-bottom">
+          <button class="btn-save-hist" onclick="saveToHistory()">💾 Save in History</button>
+          <div class="total-box">
+            <span class="total-label">Total Expense</span>
+            <span class="total-amount" id="total-amount">0</span>
+          </div>
+          <button class="btn-clear-exp" onclick="clearExpenses()">Clear</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CURRENCY -->
+    <div class="dash-page" id="page-currency">
+      <div class="currency-center">
+        <h2 class="currency-big-title">💱 Currency Converter</h2>
+        <p class="currency-desc">Convert between world currencies instantly.<br/>Know exactly how much you're spending before you travel.</p>
+        <div class="curr-card">
+          <div class="curr-field"><label>Amount</label><input type="number" id="curr-amount" placeholder="Enter amount"/></div>
+          <div class="curr-field">
+            <label>From</label>
+            <select id="curr-from">
+              <option value="INR">🇮🇳 INR — Indian Rupee</option>
+              <option value="USD">🇺🇸 USD — US Dollar</option>
+              <option value="SGD">🇸🇬 SGD — Singapore Dollar</option>
+              <option value="EUR">🇪🇺 EUR — Euro</option>
+              <option value="GBP">🇬🇧 GBP — British Pound</option>
+              <option value="AED">🇦🇪 AED — UAE Dirham</option>
+              <option value="JPY">🇯🇵 JPY — Japanese Yen</option>
+              <option value="AUD">🇦🇺 AUD — Australian Dollar</option>
+              <option value="CAD">🇨🇦 CAD — Canadian Dollar</option>
+              <option value="MYR">🇲🇾 MYR — Malaysian Ringgit</option>
+              <option value="THB">🇹🇭 THB — Thai Baht</option>
+              <option value="KRW">🇰🇷 KRW — South Korean Won</option>
+              <option value="CNY">🇨🇳 CNY — Chinese Yuan</option>
+              <option value="HKD">🇭🇰 HKD — Hong Kong Dollar</option>
+            </select>
+          </div>
+          <div class="curr-arrow">⬇</div>
+          <div class="curr-field">
+            <label>To</label>
+            <select id="curr-to">
+              <option value="SGD">🇸🇬 SGD — Singapore Dollar</option>
+              <option value="INR">🇮🇳 INR — Indian Rupee</option>
+              <option value="USD">🇺🇸 USD — US Dollar</option>
+              <option value="EUR">🇪🇺 EUR — Euro</option>
+              <option value="GBP">🇬🇧 GBP — British Pound</option>
+              <option value="AED">🇦🇪 AED — UAE Dirham</option>
+              <option value="JPY">🇯🇵 JPY — Japanese Yen</option>
+              <option value="AUD">🇦🇺 AUD — Australian Dollar</option>
+              <option value="CAD">🇨🇦 CAD — Canadian Dollar</option>
+              <option value="MYR">🇲🇾 MYR — Malaysian Ringgit</option>
+              <option value="THB">🇹🇭 THB — Thai Baht</option>
+              <option value="KRW">🇰🇷 KRW — South Korean Won</option>
+              <option value="CNY">🇨🇳 CNY — Chinese Yuan</option>
+              <option value="HKD">🇭🇰 HKD — Hong Kong Dollar</option>
+            </select>
+          </div>
+          <button class="btn-convert" onclick="convertCurrency()">Convert</button>
+          <div class="currency-result" id="currency-result">Enter amount and convert</div>
+        </div>
+        <div class="currency-why">
+          <div class="why-title">💡 Why use DesTra Currency Converter?</div>
+          <p>When you travel internationally, knowing the value of your money in the local currency is essential. DesTra's currency converter helps you plan your budget accurately — whether you're spending in Singapore Dollars, UAE Dirhams, or Japanese Yen. Never get surprised by exchange rates again. Convert before you travel, spend smarter when you're there.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="dash-page" id="page-history">
+      <div class="history-center">
+        <h2 class="hist-title">📋 Trip History</h2>
+        <p class="hist-sub">All your saved trip expenses in one place</p>
+        <div id="history-list"><div class="hist-empty">No trips saved yet.<br/>Go to Travel Expense and click "Save in History"!</div></div>
+        <div id="hist-total-bar" class="hist-total-bar" style="display:none;">
+          <span class="hist-total-label">Overall Total Expense</span>
+          <span class="hist-total-val" id="hist-total-val">0</span>
+        </div>
+        <div class="hist-actions">
+          <button class="btn-hist-clear" onclick="clearLastHistory()">Clear Last Trip</button>
+          <button class="btn-hist-delete" onclick="deleteAllHistory()">Delete All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="dash-page" id="page-about">
+      <div class="about-center">
+        <h1 class="about-hero-title">About DesTra</h1>
+        <p class="about-tagline">"Your Journey, Your Budget, Your Control"</p>
+        <div class="about-section">
+          <h3>What is DesTra?</h3>
+          <p>DesTra is a smart travel expense management platform designed for modern travellers. Whether you're planning a weekend getaway to Goa or an international trip to Singapore, DesTra helps you track, calculate, and manage every single expense, so you always know exactly where your money is going.</p>
+        </div>
+        <div class="about-section">
+          <h3>Why DesTra?</h3>
+          <p>Most travellers lose track of their spending mid-trip. They overspend on food, forget to account for local transport, or get surprised by hotel charges. DesTra was built to solve this exact problem, giving you a clear, organized view of your travel budget before, during, and after your trip.</p>
+        </div>
+        <div class="about-section">
+          <h3>What can you do with DesTra?</h3>
+          <div class="about-features">
+            <div class="feat-item"><div class="feat-icon">🗺️</div><div class="feat-title">Trip Planning</div><div class="feat-desc">Enter source and destination, see your route on a real interactive map.</div></div>
+            <div class="feat-item"><div class="feat-icon">💸</div><div class="feat-title">Expense Tracking</div><div class="feat-desc">Track travel, food, hotel, shopping, and return expenses separately.</div></div>
+            <div class="feat-item"><div class="feat-icon">📊</div><div class="feat-title">Visual Breakdown</div><div class="feat-desc">Pie and bar charts show exactly where your money goes.</div></div>
+            <div class="feat-item"><div class="feat-icon">💱</div><div class="feat-title">Currency Converter</div><div class="feat-desc">Convert between 14+ world currencies instantly.</div></div>
+            <div class="feat-item"><div class="feat-icon">📋</div><div class="feat-title">Trip History</div><div class="feat-desc">Save and review daily expenses for multi-day trips with overall totals.</div></div>
+            <div class="feat-item"><div class="feat-icon">🔐</div><div class="feat-title">Secure Login</div><div class="feat-desc">Firebase authentication with Google sign-in keeps your data safe.</div></div>
+          </div>
+        </div>
+        <div class="about-section">
+          <h3>Our Mission</h3>
+          <p>We believe every traveller deserves to experience the world without financial stress. DesTra's mission is simple, make travel budgeting so easy that anyone, anywhere can plan a trip with complete confidence. Travel more, worry less.</p>
+        </div>
+        <div class="about-section">
+          <h3>Built with</h3>
+          <p>DesTra is built using HTML, CSS, JavaScript, Firebase Authentication, Leaflet.js for interactive maps, and Chart.js for data visualization. Designed and developed in 2026.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <span>© Created in 2026</span>
+  <span>DesTra — Travel smarter. Spend wiser.</span>
+</footer>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const firebaseConfig = { apiKey: "AIzaSyB9NDtPgmX7y64K_lSmdmUhpjYvhGILC30", authDomain: "destra-57d0a.firebaseapp.com", projectId: "destra-57d0a", storageBucket: "destra-57d0a.firebasestorage.app", messagingSenderId: "305503828415", appId: "1:305503828415:web:035ab73f84a8b115c5c90a" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, (user) => {
+    if (!user) { window.location.href = 'destra_login.html'; return; }
+    document.getElementById('dd-name').textContent = user.displayName || 'User';
+    document.getElementById('dd-email').textContent = user.email;
+    document.getElementById('user-avatar').textContent = (user.displayName || user.email)[0].toUpperCase();
+  });
+  window.doLogout = async function() { await signOut(auth); window.location.href = 'destra_login.html'; };
+</script>
+
+<script>
+// USER DROPDOWN
+function toggleUserDD() { document.getElementById('user-dropdown').classList.toggle('show'); }
+document.addEventListener('click', e => { if (!e.target.closest('.user-btn')) document.getElementById('user-dropdown').classList.remove('show'); });
+
+// NAV
+function showPage(page) {
+  document.querySelectorAll('.dash-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+}
+
+// PLACES
+const places = [
+  "Vellore, Tamil Nadu, India","Chennai, Tamil Nadu, India","Coimbatore, Tamil Nadu, India",
+  "Madurai, Tamil Nadu, India","Trichy, Tamil Nadu, India","Salem, Tamil Nadu, India",
+  "Bangalore, Karnataka, India","Mumbai, Maharashtra, India","Delhi, India",
+  "Hyderabad, Telangana, India","Kolkata, West Bengal, India","Pune, Maharashtra, India",
+  "Ahmedabad, Gujarat, India","Jaipur, Rajasthan, India","Kochi, Kerala, India",
+  "Goa, India","Mysore, Karnataka, India","Pondicherry, India","Ooty, Tamil Nadu, India",
+  "Singapore","Dubai, UAE","London, UK","New York, USA","Paris, France",
+  "Tokyo, Japan","Sydney, Australia","Toronto, Canada","Kuala Lumpur, Malaysia",
+  "Bangkok, Thailand","Colombo, Sri Lanka","Kathmandu, Nepal","Hong Kong",
+  "Amsterdam, Netherlands","Rome, Italy","Barcelona, Spain","Seoul, South Korea",
+  "Beijing, China","Shanghai, China","Los Angeles, USA","Melbourne, Australia",
+  "Frankfurt, Germany","Istanbul, Turkey","Cape Town, South Africa","Cairo, Egypt"
+];
+function filterPlaces(inputId, ddId) {
+  const val = document.getElementById(inputId).value.toLowerCase().trim();
+  const dd  = document.getElementById(ddId);
+  if (!val) { dd.classList.remove('show'); return; }
+  const filtered = places.filter(p => p.toLowerCase().includes(val)).slice(0,8);
+  if (!filtered.length) { dd.classList.remove('show'); return; }
+  dd.innerHTML = filtered.map(p => `<div class="dropdown-item" onclick="selectPlace('${inputId}','${ddId}','${p.replace(/'/g,"\\'")}')">${p}</div>`).join('');
+  dd.classList.add('show');
+}
+function selectPlace(inputId, ddId, val) { document.getElementById(inputId).value = val; document.getElementById(ddId).classList.remove('show'); }
+document.addEventListener('click', e => { if (!e.target.closest('.route-wrap')) document.querySelectorAll('.dropdown-list').forEach(d => d.classList.remove('show')); });
+
+// STAY COUNT
+const sc = document.getElementById('stay-count');
+for (let i=1;i<=365;i++) { const o=document.createElement('option'); o.value=i; o.textContent=i; sc.appendChild(o); }
+
+// CURRENCY SYMBOLS
+const currSymbols = { INR:'₹', USD:'$', SGD:'S$', EUR:'€', GBP:'£', AED:'AED ', JPY:'¥', AUD:'A$', CAD:'C$', MYR:'RM ' };
+
+// CHARTS
+let pieChart, barChart;
+const COLORS = ['#3b82f6','#f59e0b','#ec4899','#10b981','#8b5cf6','#ef4444'];
+const LABELS  = ['Travel','Rent','Shopping','Food','Other','Return'];
+
+function initCharts() {
+  const pCtx = document.getElementById('pieChart').getContext('2d');
+  pieChart = new Chart(pCtx, {
+    type: 'doughnut',
+    data: { labels: LABELS, datasets: [{ data:[1,1,1,1,1,1], backgroundColor:COLORS, borderWidth:0 }] },
+    options: { cutout:'62%', plugins:{ legend:{display:false} }, animation:{duration:400}, layout:{padding:0} }
+  });
+  const bCtx = document.getElementById('barChart').getContext('2d');
+  barChart = new Chart(bCtx, {
+    type: 'bar',
+    data: { labels: LABELS, datasets: [{ data:[0,0,0,0,0,0], backgroundColor:COLORS, borderRadius:5, barPercentage:0.6 }] },
+    options: {
+      plugins:{ legend:{display:false} },
+      layout:{ padding:0 },
+      scales:{
+        x:{ ticks:{color:'rgba(150,200,255,0.5)',font:{size:9}}, grid:{color:'rgba(80,160,255,0.06)'}, border:{display:false} },
+        y:{ ticks:{color:'rgba(150,200,255,0.5)',font:{size:9}}, grid:{color:'rgba(80,160,255,0.06)'}, border:{display:false} }
+      },
+      animation:{duration:400}
+    }
+  });
+}
+
+function updateChart() {
+  const vals = [
+    +document.getElementById('exp-travel').value||0,
+    +document.getElementById('exp-rent').value||0,
+    +document.getElementById('exp-shopping').value||0,
+    +document.getElementById('exp-food').value||0,
+    +document.getElementById('exp-other').value||0,
+    +document.getElementById('exp-return').value||0,
+  ];
+  const total = vals.reduce((a,b)=>a+b,0);
+  const sym = currSymbols[document.getElementById('pref-currency').value] || '';
+  document.getElementById('total-amount').textContent = sym + total.toLocaleString();
+  if (pieChart) { pieChart.data.datasets[0].data = vals.map(v=>v||0.01); pieChart.update(); }
+  if (barChart) { barChart.data.datasets[0].data = vals; barChart.update(); }
+  document.getElementById('pie-legend').innerHTML = LABELS.map((l,i) => {
+    const pct = total ? Math.round(vals[i]/total*100) : 0;
+    return `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i]}"></div>${l}<span class="legend-pct">${pct}%</span></div>`;
+  }).join('');
+}
+
+// GO TO TRAVEL
+let tripFrom='', tripTo='', tripUnit='', tripCount=0;
+let leafletMap=null;
+
+function goToTravel() {
+  const from = document.getElementById('from-input').value.trim();
+  const to   = document.getElementById('to-input').value.trim();
+  if (!from || !to) { alert('Please enter From and Destination!'); return; }
+  tripFrom=from; tripTo=to;
+  tripUnit  = document.getElementById('stay-unit').value;
+  tripCount = +document.getElementById('stay-count').value || 1;
+  const hotel = document.getElementById('hotel-stay').value;
+  const curr  = document.getElementById('pref-currency').value;
+  const sym   = currSymbols[curr] || curr;
+
+  document.getElementById('te-trip-info').textContent = `📍 ${from}  →  🌏 ${to}   |   🗓 ${tripCount} ${tripUnit}`;
+  document.getElementById('te-curr-label').textContent = `(${curr})`;
+  document.getElementById('rent-item').style.display = hotel==='yes' ? 'block' : 'none';
+
+  ['exp-travel','exp-rent','exp-shopping','exp-food','exp-other','exp-return']
+    .forEach(id => document.getElementById(id).value='');
+
+  showPage('travel');
+  if (!pieChart) initCharts();
+  updateChart();
+  setTimeout(() => loadMap(from, to), 300);
+}
+
+// MAP
+async function geocode(place) {
+  try {
+    const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json&limit=1`);
+    const data = await res.json();
+    if (data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  } catch(e) {}
+  return null;
+}
+async function loadMap(from, to) {
+  const fc = await geocode(from);
+  const tc = await geocode(to);
+  if (!fc || !tc) return;
+  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+  leafletMap = L.map('leaflet-map');
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap' }).addTo(leafletMap);
+  const pin = (label) => L.divIcon({ html:`<div style="background:#4aa8ff;color:#fff;font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.5);">${label}</div>`, className:'', iconAnchor:[20,10] });
+  L.marker([fc.lat,fc.lng],{icon:pin('📍 '+from.split(',')[0])}).addTo(leafletMap).bindPopup(`<b>From:</b> ${from}`);
+  L.marker([tc.lat,tc.lng],{icon:pin('🌏 '+to.split(',')[0])}).addTo(leafletMap).bindPopup(`<b>To:</b> ${to}`);
+  const line = L.polyline([[fc.lat,fc.lng],[tc.lat,tc.lng]],{color:'#4aa8ff',weight:3,dashArray:'10,8',opacity:0.9}).addTo(leafletMap);
+  leafletMap.fitBounds(line.getBounds(),{padding:[30,30]});
+}
+
+// CLEAR
+function clearExpenses() {
+  ['exp-travel','exp-rent','exp-shopping','exp-food','exp-other','exp-return']
+    .forEach(id => document.getElementById(id).value='');
+  updateChart();
+}
+
+// HISTORY
+let history = JSON.parse(localStorage.getItem('destra-history') || '[]');
+
+function saveToHistory() {
+  const vals = [
+    +document.getElementById('exp-travel').value||0,
+    +document.getElementById('exp-rent').value||0,
+    +document.getElementById('exp-shopping').value||0,
+    +document.getElementById('exp-food').value||0,
+    +document.getElementById('exp-other').value||0,
+    +document.getElementById('exp-return').value||0,
+  ];
+  const total = vals.reduce((a,b)=>a+b,0);
+  if (total===0) { alert('Please enter at least one expense!'); return; }
+  const sym = currSymbols[document.getElementById('pref-currency').value] || '';
+  const route = `${tripFrom} → ${tripTo}`;
+
+  // Count how many times this exact route already saved = day number
+  const sameRouteCount = history.filter(h => h.route === route).length;
+  const dayNum = sameRouteCount + 1;
+
+  history.push({ route, day:`Day ${dayNum}`, total, sym, date:new Date().toLocaleDateString() });
+  localStorage.setItem('destra-history', JSON.stringify(history));
+  renderHistory();
+  alert(`✅ ${route} — Day ${dayNum} saved to history!`);
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (!history.length) {
+    list.innerHTML = '<div class="hist-empty">No trips saved yet.<br/>Go to Travel Expense and click "Save in History"!</div>';
+    document.getElementById('hist-total-bar').style.display='none'; return;
+  }
+  list.innerHTML = history.map((h,i) => `
+    <div class="hist-item">
+      <div><div class="hist-route">${h.route}</div><div class="hist-day">${h.day} — ${h.date}</div></div>
+      <div class="hist-amount">${h.sym}${h.total.toLocaleString()}</div>
+    </div>`).join('');
+  const overall = history.reduce((a,h)=>a+h.total,0);
+  const sym = history[history.length-1]?.sym||'';
+  document.getElementById('hist-total-bar').style.display='flex';
+  document.getElementById('hist-total-val').textContent = sym+overall.toLocaleString();
+}
+
+function clearLastHistory() {
+  if (!history.length) { alert('No history to clear!'); return; }
+  history.pop(); localStorage.setItem('destra-history',JSON.stringify(history)); renderHistory();
+}
+function deleteAllHistory() {
+  if (!history.length) { alert('No history to delete!'); return; }
+  if (confirm('Delete all trip history?')) { history=[]; localStorage.setItem('destra-history',JSON.stringify(history)); renderHistory(); }
+}
+
+// CURRENCY
+const rates = {INR:1,USD:0.012,SGD:0.016,EUR:0.011,GBP:0.0095,AED:0.044,JPY:1.78,AUD:0.018,CAD:0.016,MYR:0.056,THB:0.44,KRW:16.2,CNY:0.087,HKD:0.094};
+function convertCurrency() {
+  const amt=+document.getElementById('curr-amount').value;
+  const from=document.getElementById('curr-from').value;
+  const to=document.getElementById('curr-to').value;
+  if (!amt) { document.getElementById('currency-result').textContent='Enter an amount!'; return; }
+  const result=((amt/rates[from])*rates[to]).toFixed(2);
+  document.getElementById('currency-result').textContent=`${amt} ${from} = ${result} ${to}`;
+}
+
+renderHistory();
+</script>
+</body>
+</html>
