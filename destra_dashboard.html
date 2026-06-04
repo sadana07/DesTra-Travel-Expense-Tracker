@@ -24,7 +24,6 @@ body {
     radial-gradient(ellipse at 60% 80%, rgba(0,10,40,0.6) 0%, transparent 55%);
 }
 
-/* STARS EFFECT */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
@@ -49,7 +48,6 @@ body::before {
 
 header, .sidebar, .main-content, footer { position: relative; z-index: 2; }
 
-/* HEADER */
 header {
   background: #000;
   border-bottom: 1px solid rgba(255,255,255,0.08);
@@ -77,10 +75,8 @@ header {
 .user-dropdown .uemail { font-size: 12px; color: rgba(150,200,255,0.5); margin-bottom: 14px; }
 .btn-logout-dd { width: 100%; padding: 8px; background: rgba(255,80,80,0.15); border: 1px solid rgba(255,80,80,0.3); border-radius: 8px; color: #ff8080; font-size: 13px; cursor: pointer; }
 
-/* LAYOUT */
 .app-body { display: flex; flex: 1; }
 
-/* SIDEBAR */
 .sidebar {
   width: 180px; background: rgba(0,0,0,0.88);
   border-right: 1px solid rgba(255,255,255,0.06);
@@ -106,16 +102,13 @@ header {
 }
 .nav-logout:hover { color: #ff8080; background: rgba(255,80,80,0.08); }
 
-/* MAIN */
 .main-content { flex: 1; overflow-y: auto; padding: 32px 36px; }
 
 .dash-page { display: none; }
 .dash-page.active { display: block; }
 
-/* CENTER WRAPPER */
 .page-center { max-width: 620px; margin: 0 auto; }
 
-/* ── HOME PAGE ── */
 .home-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: #fff; text-align: center; margin-bottom: 8px; }
 .home-sub { font-size: 14px; color: rgba(150,200,255,0.5); text-align: center; margin-bottom: 40px; }
 
@@ -152,29 +145,22 @@ header {
 .catchy-text p { font-size: 13px; color: rgba(150,200,255,0.55); line-height: 1.8; }
 .catchy-text .hl { color: #4aa8ff; font-weight: 600; }
 
-/* ── TRAVEL EXPENSE PAGE ── */
-/* Full layout matching sketch */
 .te-page-wrap { max-width: 960px; margin: 0 auto; }
 
-/* Map full width on top */
 .map-full { width: 100%; height: 260px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(80,160,255,0.2); margin-bottom: 24px; }
 #leaflet-map { width: 100%; height: 100%; }
 
-/* Two col below map */
 .te-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; align-items: stretch; }
 
 .section-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(150,200,255,0.4); margin-bottom: 12px; }
 
 .glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(80,160,255,0.15); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; }
 
-/* Expense inputs */
 .expense-item { margin-bottom: 12px; }
 .expense-item label { display: block; font-size: 13px; color: rgba(150,200,255,0.7); margin-bottom: 5px; }
 .expense-item input { width: 100%; padding: 10px 13px; background: rgba(10,22,40,0.95); border: 1.5px solid rgba(80,160,255,0.2); border-radius: 9px; font-size: 14px; color: #e0f0ff; outline: none; font-family: 'DM Sans', sans-serif; }
 .expense-item input:focus { border-color: #4aa8ff; }
 
-/* Charts */
-/* Charts - pie on top, bar below, no gaps */
 .chart-top { display: flex; gap: 16px; align-items: center; margin-bottom: 0; padding-bottom: 16px; border-bottom: 1px solid rgba(80,160,255,0.1); }
 .chart-top canvas { width: 160px !important; height: 160px !important; flex-shrink: 0; }
 .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: rgba(150,200,255,0.75); margin-bottom: 8px; }
@@ -183,7 +169,6 @@ header {
 .bar-wrap { width: 100%; flex: 1; padding-top: 14px; display: flex; flex-direction: column; }
 .bar-wrap canvas { width: 100% !important; flex: 1; min-height: 150px; display: block; }
 
-/* Bottom row: Save | Total | Clear */
 .te-bottom { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
 .btn-save-hist { padding: 12px 20px; background: linear-gradient(135deg,#1a6fff,#0ea5e9); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .btn-save-hist:hover { box-shadow: 0 4px 16px rgba(30,120,255,0.4); }
@@ -193,7 +178,6 @@ header {
 .btn-clear-exp { padding: 12px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(80,160,255,0.2); border-radius: 10px; color: #e0f0ff; font-size: 14px; cursor: pointer; white-space: nowrap; }
 .btn-clear-exp:hover { background: rgba(255,80,80,0.15); border-color: rgba(255,80,80,0.3); color: #ff8080; }
 
-/* ── CURRENCY PAGE ── */
 .currency-center { max-width: 440px; margin: 0 auto; }
 .currency-big-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #fff; text-align: center; margin-bottom: 8px; }
 .currency-desc { font-size: 14px; color: rgba(150,200,255,0.5); text-align: center; margin-bottom: 28px; line-height: 1.7; }
@@ -211,7 +195,6 @@ header {
 .currency-why .why-title { font-size: 14px; font-weight: 600; color: #7dd3fc; margin-bottom: 8px; }
 .currency-why p { font-size: 13px; color: rgba(150,200,255,0.5); line-height: 1.8; }
 
-/* ── HISTORY PAGE ── */
 .history-center { max-width: 680px; margin: 0 auto; }
 .hist-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 6px; }
 .hist-sub { font-size: 14px; color: rgba(150,200,255,0.45); margin-bottom: 24px; }
@@ -229,7 +212,6 @@ header {
 .btn-hist-delete:hover { background: rgba(255,80,80,0.2); }
 .hist-empty { text-align: center; padding: 50px 20px; color: rgba(150,200,255,0.35); font-size: 14px; }
 
-/* ── ABOUT PAGE ── */
 .about-center { max-width: 680px; margin: 0 auto; }
 .about-hero-title { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 900; color: #fff; margin-bottom: 14px; line-height: 1.2; }
 .about-tagline { font-size: 18px; color: #4aa8ff; font-style: italic; margin-bottom: 36px; }
@@ -242,13 +224,11 @@ header {
 .feat-title { font-size: 14px; font-weight: 600; color: #e0f0ff; margin-bottom: 4px; }
 .feat-desc { font-size: 13px; color: rgba(150,200,255,0.5); line-height: 1.5; }
 
-/* FOOTER */
 footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: rgba(200,200,200,0.35); position: relative; z-index: 2; flex-shrink: 0; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo">DesTra</div>
   <div class="user-btn">
@@ -263,7 +243,6 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
 
 <div class="app-body">
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="nav-item active" onclick="showPage('home')" id="nav-home"><span class="nav-icon">🏠</span> Home</div>
     <div class="nav-item" onclick="showPage('travel')" id="nav-travel"><span class="nav-icon">✈</span> Travel Expense</div>
@@ -274,10 +253,8 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
     <div class="nav-logout" onclick="doLogout()"><span class="nav-icon">🚪</span> Logout</div>
   </div>
 
-  <!-- MAIN CONTENT -->
   <div class="main-content">
 
-    <!-- HOME -->
     <div class="dash-page active" id="page-home">
       <div class="page-center">
         <h1 class="home-title">Plan Your Trip ✈</h1>
@@ -356,11 +333,9 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
       </div>
     </div>
 
-    <!-- TRAVEL EXPENSE -->
     <div class="dash-page" id="page-travel">
       <div class="te-page-wrap">
 
-        <!-- MAP FULL WIDTH -->
         <div class="section-title">Route Map</div>
         <div class="map-full">
           <div id="leaflet-map"></div>
@@ -368,10 +343,8 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
 
         <div id="te-trip-info" style="font-size:13px;color:rgba(150,200,255,0.5);margin-bottom:16px;"></div>
 
-        <!-- TWO COL: inputs | charts -->
         <div class="te-two-col">
 
-          <!-- LEFT: Expense Inputs -->
           <div>
             <div class="section-title">Enter Your Expenses <span id="te-curr-label" style="color:#4aa8ff;"></span></div>
             <div class="glass-card">
@@ -384,7 +357,6 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
             </div>
           </div>
 
-          <!-- RIGHT: Charts -->
           <div>
             <div class="section-title">Expense Breakdown</div>
             <div class="glass-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:0;">
@@ -395,7 +367,7 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
                   <div style="font-size:12px;color:rgba(150,200,255,0.35);">Enter expenses to see chart</div>
                 </div>
               </div>
-              <!-- Bar chart below -->
+
               <div class="bar-wrap">
                 <canvas id="barChart"></canvas>
               </div>
@@ -404,7 +376,7 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
 
         </div>
 
-        <!-- BOTTOM ROW: Save | Total | Clear -->
+
         <div class="te-bottom">
           <button class="btn-save-hist" onclick="saveToHistory()">💾 Save in History</button>
           <div class="total-box">
@@ -417,7 +389,6 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
       </div>
     </div>
 
-    <!-- CURRENCY -->
     <div class="dash-page" id="page-currency">
       <div class="currency-center">
         <h2 class="currency-big-title">💱 Currency Converter</h2>
@@ -473,7 +444,7 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
       </div>
     </div>
 
-    <!-- HISTORY -->
+
     <div class="dash-page" id="page-history">
       <div class="history-center">
         <h2 class="hist-title">📋 Trip History</h2>
@@ -490,7 +461,7 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
       </div>
     </div>
 
-    <!-- ABOUT -->
+
     <div class="dash-page" id="page-about">
       <div class="about-center">
         <h1 class="about-hero-title">About DesTra</h1>
@@ -533,7 +504,7 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
   <span>DesTra — Travel smarter. Spend wiser.</span>
 </footer>
 
-<!-- Firebase -->
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -550,11 +521,11 @@ footer { background: #000; border-top: 1px solid rgba(255,255,255,0.07); padding
 </script>
 
 <script>
-// USER DROPDOWN
+
 function toggleUserDD() { document.getElementById('user-dropdown').classList.toggle('show'); }
 document.addEventListener('click', e => { if (!e.target.closest('.user-btn')) document.getElementById('user-dropdown').classList.remove('show'); });
 
-// NAV
+
 function showPage(page) {
   document.querySelectorAll('.dash-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -562,7 +533,7 @@ function showPage(page) {
   document.getElementById('nav-' + page).classList.add('active');
 }
 
-// PLACES
+
 const places = [
   "Vellore, Tamil Nadu, India","Chennai, Tamil Nadu, India","Coimbatore, Tamil Nadu, India",
   "Madurai, Tamil Nadu, India","Trichy, Tamil Nadu, India","Salem, Tamil Nadu, India",
@@ -589,14 +560,13 @@ function filterPlaces(inputId, ddId) {
 function selectPlace(inputId, ddId, val) { document.getElementById(inputId).value = val; document.getElementById(ddId).classList.remove('show'); }
 document.addEventListener('click', e => { if (!e.target.closest('.route-wrap')) document.querySelectorAll('.dropdown-list').forEach(d => d.classList.remove('show')); });
 
-// STAY COUNT
+
 const sc = document.getElementById('stay-count');
 for (let i=1;i<=365;i++) { const o=document.createElement('option'); o.value=i; o.textContent=i; sc.appendChild(o); }
 
-// CURRENCY SYMBOLS
 const currSymbols = { INR:'₹', USD:'$', SGD:'S$', EUR:'€', GBP:'£', AED:'AED ', JPY:'¥', AUD:'A$', CAD:'C$', MYR:'RM ' };
 
-// CHARTS
+
 let pieChart, barChart;
 const COLORS = ['#3b82f6','#f59e0b','#ec4899','#10b981','#8b5cf6','#ef4444'];
 const LABELS  = ['Travel','Rent','Shopping','Food','Other','Return'];
@@ -644,7 +614,7 @@ function updateChart() {
   }).join('');
 }
 
-// GO TO TRAVEL
+
 let tripFrom='', tripTo='', tripUnit='', tripCount=0;
 let leafletMap=null;
 
@@ -695,14 +665,14 @@ async function loadMap(from, to) {
   leafletMap.fitBounds(line.getBounds(),{padding:[30,30]});
 }
 
-// CLEAR
+
 function clearExpenses() {
   ['exp-travel','exp-rent','exp-shopping','exp-food','exp-other','exp-return']
     .forEach(id => document.getElementById(id).value='');
   updateChart();
 }
 
-// HISTORY
+
 let history = JSON.parse(localStorage.getItem('destra-history') || '[]');
 
 function saveToHistory() {
@@ -755,7 +725,7 @@ function deleteAllHistory() {
   if (confirm('Delete all trip history?')) { history=[]; localStorage.setItem('destra-history',JSON.stringify(history)); renderHistory(); }
 }
 
-// CURRENCY
+
 const rates = {INR:1,USD:0.012,SGD:0.016,EUR:0.011,GBP:0.0095,AED:0.044,JPY:1.78,AUD:0.018,CAD:0.016,MYR:0.056,THB:0.44,KRW:16.2,CNY:0.087,HKD:0.094};
 function convertCurrency() {
   const amt=+document.getElementById('curr-amount').value;
